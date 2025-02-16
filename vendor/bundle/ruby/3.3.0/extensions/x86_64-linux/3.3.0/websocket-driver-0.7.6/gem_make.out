@@ -1,0 +1,9 @@
+current directory: /rails/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.7.6/ext/websocket-driver
+/usr/local/bin/ruby extconf.rb
+creating Makefile
+
+current directory: /rails/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.7.6/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20250215-491-2zcab3 sitelibdir\=./.gem.20250215-491-2zcab3 clean
+current directory: /rails/vendor/bundle/ruby/3.3.0/gems/websocket-driver-0.7.6/ext/websocket-driver
+make DESTDIR\= sitearchdir\=./.gem.20250215-491-2zcab3 sitelibdir\=./.gem.20250215-491-2zcab3
+make failedNo such file or directory - make
