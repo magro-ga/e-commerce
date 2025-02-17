@@ -191,6 +191,38 @@ A aplicação já possui um Dockerfile, que define como a aplicação deve ser c
 
 ### Como executar o projeto
 
+# Via Docker
+
+Para iniciar todos os serviços em background:
+```bash
+docker-compose up -d
+```
+
+Rodando a primeira vez:
+```bash
+docker-compose build
+```
+
+Se for a primeira vez rodando o projeto, execute:
+```bash
+docker-compose exec web rails db:setup
+```
+
+Se o banco já existir e só precisar rodar as migrações:
+```bash
+docker-compose exec web rails db:migrate
+```
+
+Se precisar popular o banco com dados iniciais:
+```bash
+docker-compose exec web rails db:seed
+```
+
+Caso precise acessar o shell do container para rodar comandos manuais:
+```bash
+docker-compose exec web bash
+```
+
 ## Executando a app sem o docker
 Dado que todas as as ferramentas estão instaladas e configuradas:
 
@@ -216,3 +248,85 @@ bundle exec rspec
 
 ### Como enviar seu projeto
 Salve seu código em um versionador de código (GitHub, GitLab, Bitbucket) e nos envie o link publico. Se achar necessário, informe no README as instruções para execução ou qualquer outra informação relevante para correção/entendimento da sua solução.
+
+-----------------------------------------------------------------------------------
+
+# API de Carrinho de Compras
+
+Este documento descreve como testar a API de carrinho de compras utilizando o `curl`.
+
+## 1. Criar um Carrinho (quando não há carrinho existente)
+
+Esta requisição cria um carrinho e adiciona um produto (com ID `1` e quantidade `2`). Ela também armazena os cookies para usar nas próximas requisições.
+
+```bash
+curl -X POST http://localhost:3000/cart \
+-H "Content-Type: application/json" \
+-d '{"product_id": 1, "quantity": 2}' -c cookies.txt
+```
+
+## 2. Adicionar um produto ao carrinho
+
+```bash
+curl -X POST http://localhost:3000/cart \
+-H "Content-Type: application/json" \
+-d '{"product_id": 2, "quantity": 3}' -b cookies.txt
+```
+
+## 3. Verifica os itens no carrinho
+
+```bash
+curl -X GET http://localhost:3000/cart -b cookies.txt
+```
+
+## 4. Atualizar a Quantidade de um Produto no Carrinho
+
+```bash
+curl -X PUT http://localhost:3000/cart \
+-H "Content-Type: application/json" \
+-d '{"product_id": 1, "quantity": 5}' -b cookies.txt
+```
+
+## 5. Remover um Produto do Carrinho
+
+```bash
+curl -X DELETE http://localhost:3000/cart \
+-H "Content-Type: application/json" \
+-d '{"product_id": 1}' -b cookies.txt
+```
+
+## 6. Criar Carrinho e Adicionar Múltiplos Produtos
+
+```bash
+curl -X POST http://localhost:3000/cart \
+-H "Content-Type: application/json" \
+-d '{"product_id": 1, "quantity": 2}' -c cookies.txt
+curl -X POST http://localhost:3000/cart \
+-H "Content-Type: application/json" \
+-d '{"product_id": 2, "quantity": 3}' -b cookies.txt
+```
+-----------------------------------------------------
+
+## Cálculo Dinâmico de `total_price` e Cookies
+
+### `total_price` Dinâmico
+
+O `total_price` do carrinho é calculado automaticamente a cada vez que um produto é adicionado ou sua quantidade é alterada. Ele é recalculado com base no preço unitário de cada produto e na quantidade no carrinho, por isso não é necessário atualizar manualmente ou ter o campo no banco de dados, já que o preço
+total só deve ser de fato calculado no momento da compra (numa tabela Order por exemplo).
+
+### Cookies
+
+O **ID do carrinho** é salvo em cookies para garantir que o carrinho seja persistido entre requisições. Isso permite que o usuário continue adicionando produtos ao mesmo carrinho, mesmo depois de fechar o navegador ou reiniciar a aplicação.
+
+1. **Criação do Carrinho**: Se não houver um carrinho existente (sem `cart_id` nos cookies), um novo carrinho é criado e o seu ID é salvo no cookie.
+2. **Adição de Produtos**: Ao adicionar um produto, o `cart_id` é recuperado dos cookies e o produto é adicionado ao carrinho correspondente.
+3. **Atualização do Carrinho**: O `total_price` é atualizado sempre que o carrinho é modificado.
+
+### Exemplo de Fluxo:
+
+1. **Criando um Carrinho**: Se não houver um carrinho, ele é criado e o ID é salvo nos cookies.
+2. **Adicionando um Produto**: O produto é adicionado e o `total_price` é recalculado automaticamente.
+3. **Atualizando o Carrinho**: Se a quantidade de um produto for alterada, o `total_price` é recalculado.
+4. **Persistência com Cookies**: O `cart_id` nos cookies garante que o carrinho não será perdido entre as requisições.
+
+Alguns comentários foram deixado no código para dar mais clareza.
