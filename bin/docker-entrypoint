@@ -1,8 +1,12 @@
 #!/bin/bash -e
 
-# If running the rails server then create or migrate existing database
-if [ "${1}" == "./bin/rails" ] && [ "${2}" == "server" ]; then
+# Remove o arquivo server.pid se existir (previne erro do Puma)
+rm -f /rails/tmp/pids/server.pid
+
+# Se o comando for para iniciar o Rails, prepara o banco de dados
+if [ "$1" == "./bin/rails" ] && [ "$2" == "server" ]; then
   ./bin/rails db:prepare
 fi
 
-exec "${@}"
+# Executa o comando passado para o container
+exec "$@"
