@@ -45,8 +45,7 @@ RSpec.describe Cart, type: :model do
     let(:abandoned_cart) { create(:cart, :old_abandoned) }
 
     it 'removes the cart if abandoned for more than 7 days' do
-      puts "Cart last_interaction_at: #{abandoned_cart.last_interaction_at}"
-      puts "Cart should_be_removed?: #{abandoned_cart.should_be_removed?}"
+      abandoned_cart.mark_as_abandoned
       expect { abandoned_cart.remove_if_abandoned }.to change { Cart.count }.by(-1)
     end
 

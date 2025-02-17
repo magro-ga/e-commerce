@@ -8,7 +8,7 @@ RSpec.describe MarkCartAsAbandonedJob, type: :job do
     let!(:old_cart) { create(:cart, last_interaction_at: 4.hours.ago) }
     let!(:abandoned_cart) { create(:cart, :old_abandoned) }
 
-    it "marca carrinhos antigos como abandonados" do
+    it "mark old carts as abandoned" do
       expect(old_cart.status).to eq("active")
 
       MarkCartAsAbandonedJob.new.perform
@@ -17,7 +17,7 @@ RSpec.describe MarkCartAsAbandonedJob, type: :job do
       expect(old_cart.status).to eq("abandoned")
     end
 
-    it "não altera carrinhos recentes" do
+    it "does not change recent carts" do
       expect(recent_cart.status).to eq("active")
 
       MarkCartAsAbandonedJob.new.perform
@@ -26,7 +26,7 @@ RSpec.describe MarkCartAsAbandonedJob, type: :job do
       expect(recent_cart.status).to eq("active")
     end
 
-    it "remove carrinhos abandonados há mais de 7 dias" do
+    it "remove carts abandoned for more than 7 days" do
       expect(Cart.exists?(abandoned_cart.id)).to be_truthy
 
       MarkCartAsAbandonedJob.new.perform
