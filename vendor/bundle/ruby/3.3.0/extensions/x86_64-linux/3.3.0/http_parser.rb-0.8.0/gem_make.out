@@ -3,7 +3,7 @@ current directory: /rails/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext
 creating Makefile
 
 current directory: /rails/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
-make DESTDIR\= sitearchdir\=./.gem.20250215-491-bj0eem sitelibdir\=./.gem.20250215-491-bj0eem clean
+make DESTDIR\= sitearchdir\=./.gem.20250216-424-bfhl3j sitelibdir\=./.gem.20250216-424-bfhl3j clean
 current directory: /rails/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
-make DESTDIR\= sitearchdir\=./.gem.20250215-491-bj0eem sitelibdir\=./.gem.20250215-491-bj0eem
+make DESTDIR\= sitearchdir\=./.gem.20250216-424-bfhl3j sitelibdir\=./.gem.20250216-424-bfhl3j
 make failedNo such file or directory - make

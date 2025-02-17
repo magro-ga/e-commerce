@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2025_02_15_201009) do
+ActiveRecord::Schema[7.1].define(version: 2025_02_16_185514) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -27,6 +27,8 @@ ActiveRecord::Schema[7.1].define(version: 2025_02_15_201009) do
   create_table "carts", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "status", default: 10, null: false
+    t.datetime "last_interaction_at", default: -> { "CURRENT_TIMESTAMP" }
   end
 
   create_table "products", force: :cascade do |t|

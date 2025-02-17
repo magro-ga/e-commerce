@@ -19,6 +19,12 @@ group :development, :test do
   gem "debug", platforms: %i[ mri windows ]
   gem 'rspec-rails', '~> 6.1.0'
   gem 'shoulda-matchers', '~> 5.0'
+  gem 'factory_bot_rails'
+  gem 'pry'
+  gem 'simplecov', require: false
+  gem 'rubocop', require: false
+  gem 'rubocop-rails', require: false
+  gem 'rubocop-rspec', require: false
 end
 
 group :development do
