@@ -1,13 +1,19 @@
 class CartsController < ApplicationController
+  include ActionController::Cookies
+
   before_action :set_cart
 
   def create
     product = Product.find(params[:product_id])
     cart_item = @cart.cart_items.find_or_initialize_by(product: product)
-    cart_item.quantity += params[:quantity].to_i
-    cart_item.save!
 
-    render json: cart_response(@cart), status: :created
+    cart_item.quantity += params[:quantity].to_i
+
+    if cart_item.save
+      render json: { cart: @cart, products: @cart.cart_items }, status: :created
+    else
+      render json: { error: 'Could not add product to cart' }, status: :unprocessable_entity
+    end
   end
 
   def show
@@ -33,8 +39,14 @@ class CartsController < ApplicationController
   private
 
   def set_cart
-    @cart = Cart.find_or_create_by(id: session[:cart_id]) || Cart.create!
-    session[:cart_id] = @cart.id
+    cart_id = cookies[:cart_id]  # Tenta pegar o cart_id do cookie
+    
+    if cart_id.present? && Cart.exists?(cart_id)  # Verifica se o cart_id existe e é válido
+      @cart = Cart.find(cart_id)  # Se o cart_id existir, encontra o carrinho
+    else
+      @cart = Cart.create!  # Caso não, cria um novo carrinho
+      cookies[:cart_id] = { value: @cart.id, expires: 1.year.from_now }  # Salva o ID do carrinho no cookie com expiração de 1 ano
+    end
   end
 
   def cart_response(cart)
