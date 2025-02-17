@@ -1,5 +1,7 @@
 class Cart < ApplicationRecord
-  after_create :generate_expire_job
+  include PriceCalculable
+  
+  after_create :schedule_abandonment_check
 
   CONSIDERED_ABANDONED_TIMESPAN = 3.hours
   REMOVE_ABANDONED_CART_TIMESPAN = 7.days
@@ -14,21 +16,32 @@ class Cart < ApplicationRecord
     cart_items.sum(&:total_price)
   end
 
+  def should_be_abandoned?
+    last_interaction_at <= CONSIDERED_ABANDONED_TIMESPAN.ago
+  end
+
+  def should_be_removed?
+    last_interaction_at <= REMOVE_ABANDONED_CART_TIMESPAN.ago
+  end
+
   def mark_as_abandoned
-    return unless last_interaction_at <= CONSIDERED_ABANDONED_TIMESPAN.ago
+    return unless should_be_abandoned?
 
     update(status: :abandoned)
   end
 
   def remove_if_abandoned
-    return unless last_interaction_at <= REMOVE_ABANDONED_CART_TIMESPAN.ago
+    return unless should_be_removed?
 
+    cart_items.destroy_all 
     destroy!
   end
 
   private
 
-  def generate_expire_job
-    ExpireCartsJob.perform_in(CONSIDERED_ABANDONED_TIMESPAN, self.id)
+  def schedule_abandonment_check
+    return if should_be_abandoned? # Evita agendar se já deveria estar abandonado
+
+    MarkCartAsAbandonedJob.perform_in(CONSIDERED_ABANDONED_TIMESPAN, id)
   end
 end
