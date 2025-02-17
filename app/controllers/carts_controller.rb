@@ -1,17 +1,17 @@
 class CartsController < ApplicationController
   before_action :set_cart
 
-  def show
-    render json: cart_response(@cart)
-  end
-
   def create
     product = Product.find(params[:product_id])
-    cart_item = @cart.cart_items.find_or_initialize_by(product_id: product.id)
+    cart_item = @cart.cart_items.find_or_initialize_by(product: product)
     cart_item.quantity += params[:quantity].to_i
     cart_item.save!
 
     render json: cart_response(@cart), status: :created
+  end
+
+  def show
+    render json: cart_response(@cart)
   end
 
   def update
